@@ -431,15 +431,6 @@ erDiagram
 
 ---
 
-## 👥 Team
-
-| Name | Role |
-|:-----|:-----|
-| **Parmeet** | Full-Stack Developer |
-| **Mohini** | Project Lead |
-
----
-
 ## 📄 License
 
 This project is developed as part of **ProjectDev Batch 1** and is intended for educational and portfolio purposes.
