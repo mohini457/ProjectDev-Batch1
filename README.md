@@ -1,46 +1,36 @@
-# Smart CarPooling System
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
----
+## Getting Started
 
-## 📄 Project Documentation
+First, run the development server:
 
-Access the full project documentation here:  
-👉 https://docs.google.com/document/d/1yERPUNSvUMSwepQldyBkPz11E2jxoVnun80u4VVMq28/edit?usp=sharing
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 👥 Team Name- Byte Builders
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- Parul Singh 
-- Mohini Bharti 
-- Parmeet Singh
-- Shubh Yadav  
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## 📌 Overview
+To learn more about Next.js, take a look at the following resources:
 
-**CarPooling System** is a ride-sharing platform that connects drivers and riders to share rides efficiently. It helps reduce travel costs, traffic congestion, and environmental impact while ensuring user safety and privacy.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## ✨ Features
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-- 🔐 **User Authentication**  
-  Users can securely register and log in to the system.
+## Deploy on Vercel
 
-- 👤 **Role Selection (Driver/Rider)**  
-  Users can choose whether they want to offer a ride (Driver) or join a ride (Rider).
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- 🚗 **Ride Creation & Search**  
-  Drivers can create rides by entering trip details, while riders can search for available rides.
-
-- 🤖 **Intelligent Ride Matching**  
-  The system matches riders with suitable rides based on location and preferences.
-
-- 📍 **Real-Time Tracking**  
-  Track ride location live during the journey for better coordination and safety.
-
-- 🚨 **SOS Emergency Feature**  
-  Users can trigger an SOS alert during emergencies, notifying authorities and emergency contacts.
-
-- ⭐ **Ratings & Feedback System**  
-  Riders and drivers can rate each other and provide feedback after ride completion.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

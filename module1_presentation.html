@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module I — Pool Creation & Joining | Carvaan Go</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0553BA;
+    --dark: #054752;
+    --gray: #708C91;
+    --light: #F5F7FA;
+    --border: #E2E8F0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--dark);
+    background: white;
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 50px;
+  }
+
+  /* Cover Page */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0553BA 0%, #033B85 50%, #021D44 100%);
+    color: white;
+    padding: 60px;
+    page-break-after: always;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .cover .subtitle {
+    font-size: 22px;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 40px;
+  }
+  .cover .meta {
+    font-size: 16px;
+    opacity: 0.7;
+    line-height: 2;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 8px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 30px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Section headers */
+  h2 {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--dark);
+    margin: 50px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--blue);
+    display: inline-block;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--dark);
+    margin: 30px 0 12px 0;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--blue);
+    margin: 20px 0 8px 0;
+  }
+
+  p { margin: 8px 0; color: #334155; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px 0;
+    font-size: 13px;
+    page-break-inside: avoid;
+  }
+  th {
+    background: var(--blue);
+    color: white;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child { border-radius: 0 8px 0 0; }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--light); }
+  tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+  /* Code blocks */
+  code {
+    background: #EEF2FF;
+    color: var(--blue);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+  }
+  pre {
+    background: #1E293B;
+    color: #E2E8F0;
+    padding: 18px 22px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 12px 0 20px 0;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-weight: 400;
+  }
+
+  /* Mermaid diagrams */
+  .mermaid {
+    text-align: center;
+    margin: 20px 0 30px 0;
+    page-break-inside: avoid;
+  }
+
+  /* Info boxes */
+  .info-box {
+    background: #EFF6FF;
+    border-left: 4px solid var(--blue);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .info-box strong { color: var(--blue); }
+
+  /* Design decision boxes */
+  .decision {
+    background: #F0FDF4;
+    border-left: 4px solid #22C55E;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  /* Lists */
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin: 4px 0; }
+
+  /* Pipeline box */
+  .pipeline {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    margin: 12px 0 20px 0;
+    line-height: 2;
+  }
+  .pipeline .arrow { color: var(--blue); font-weight: 700; }
+
+  /* Page breaks */
+  .page-break { page-break-before: always; }
+
+  /* Print styles */
+  @media print {
+    body { font-size: 12px; }
+    .page { padding: 20px 30px; }
+    .cover { min-height: auto; padding: 80px 40px; }
+    h2 { font-size: 22px; margin-top: 30px; }
+    .mermaid svg { max-width: 100% !important; }
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .card {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .card h4 { margin-top: 0; }
+
+  .emoji { font-size: 18px; margin-right: 6px; }
+  .section-num {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 800;
+    font-size: 14px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  .check { color: #22C55E; }
+  .cross { color: #EF4444; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ COVER PAGE ═══════════════════ -->
+<div class="cover">
+  <div style="font-size: 60px; margin-bottom: 20px;">🚗</div>
+  <h1>Carvaan Go</h1>
+  <div class="subtitle">Smart Carpooling System</div>
+  <div style="width:60px;height:3px;background:rgba(255,255,255,0.4);border-radius:2px;margin:0 auto 30px"></div>
+  <div style="font-size:28px;font-weight:800;margin-bottom:8px;">Module I</div>
+  <div style="font-size:20px;font-weight:600;opacity:0.9;">Pool Creation & Joining</div>
+  <div class="meta">
+    <br>
+    <strong>Presented by:</strong> Parmeet Singh<br>
+    <strong>Date:</strong> April 2026
+  </div>
+  <div class="badge">Next.js 15 · React 19 · PostgreSQL · Clerk · Mapbox · OSRM · Groq AI</div>
+</div>
+
+<!-- ═══════════════════ CONTENT ═══════════════════ -->
+<div class="page">
+
+<!-- Section 1 -->
+<h2><span class="section-num">1</span> Module Overview</h2>
+<p>This module implements the complete <strong>ride pool lifecycle</strong> — from a driver publishing a ride to a rider discovering, requesting, and getting approved for that ride.</p>
+
+<h3>Two User Roles</h3>
+<table>
+  <tr><th>Role</th><th>Actions</th></tr>
+  <tr><td><strong>Driver</strong></td><td>Create ride pool → Review join requests → Approve / Reject riders</td></tr>
+  <tr><td><strong>Rider</strong></td><td>Search rides → Filter by preferences → Send join request → Track request status</td></tr>
+</table>
+
+<h3>Driver Creates a Ride Pool With:</h3>
+<ul>
+  <li><span class="check">✅</span> <strong>Pickup & Drop Locations</strong> — Exact or approximate locations with GPS coordinates</li>
+  <li><span class="check">✅</span> <strong>Departure Time & Date</strong> — When the ride will begin</li>
+  <li><span class="check">✅</span> <strong>Available Seats</strong> — Maximum passengers allowed (AI-detected from car photo)</li>
+  <li><span class="check">✅</span> <strong>Vehicle Details</strong> — Car model, license plate, verified photo</li>
+  <li><span class="check">✅</span> <strong>Preferences & Rules</strong> — Music, smoking, pet-friendly, female-only, luggage size</li>
+</ul>
+
+<h3>Rider Joins a Ride Pool By:</h3>
+<ul>
+  <li><span class="check">✅</span> Searching for available rides based on destination and departure time</li>
+  <li><span class="check">✅</span> Filtering rides based on preferences (female-only, no smoking, etc.)</li>
+  <li><span class="check">✅</span> Requesting to join a ride and waiting for driver approval</li>
+  <li><span class="check">✅</span> Once approved, receiving ride details including pickup location</li>
+</ul>
+
+<!-- Section 2 -->
+<div class="page-break"></div>
+<h2><span class="section-num">2</span> Technology Stack</h2>
+<table>
+  <tr><th>Technology</th><th>Purpose</th><th>Why This?</th></tr>
+  <tr><td><strong>Next.js 15</strong></td><td>Full-stack framework</td><td>Server-side API routes + client-side React in one framework. No separate backend.</td></tr>
+  <tr><td><strong>Clerk</strong></td><td>Authentication</td><td>Pre-built auth with Google/GitHub OAuth. Handles sessions, JWT tokens automatically.</td></tr>
+  <tr><td><strong>Drizzle ORM</strong></td><td>Database queries</td><td>Type-safe SQL with TypeScript. Lightweight, no heavy abstraction like Prisma.</td></tr>
+  <tr><td><strong>Neon (PostgreSQL)</strong></td><td>Cloud Database</td><td>Serverless Postgres — scales to zero, perfect for Next.js serverless functions.</td></tr>
+  <tr><td><strong>Mapbox GL JS</strong></td><td>Interactive Maps</td><td>Premium map tiles, draggable markers, route polylines. Free 50K loads/month.</td></tr>
+  <tr><td><strong>OSRM</strong></td><td>Route Calculation</td><td>Free, open-source. Returns driving distance, duration, encoded polyline. No API key.</td></tr>
+  <tr><td><strong>Mapbox Geocoding</strong></td><td>Address Search</td><td>Best POI coverage (universities, stations, shops). 100K free requests/month.</td></tr>
+  <tr><td><strong>Nominatim (OSM)</strong></td><td>Geocoding Fallback</td><td>Free OSM-based geocoder. Used when Mapbox fails or quota exceeded.</td></tr>
+  <tr><td><strong>Appwrite</strong></td><td>File Storage</td><td>Cloud storage for vehicle images. Handles upload and serving.</td></tr>
+  <tr><td><strong>Groq Vision AI</strong></td><td>Image Validation</td><td>AI validates car photos and estimates seating capacity. Free tier.</td></tr>
+  <tr><td><strong>Framer Motion</strong></td><td>Animations</td><td>Smooth transitions, card animations. Premium feel.</td></tr>
+</table>
+
+<!-- Section 3 -->
+<div class="page-break"></div>
+<h2><span class="section-num">3</span> Database Schema (ER Diagram)</h2>
+<div class="mermaid">
+erDiagram
+    USERS {
+        serial id PK
+        varchar clerk_id UK
+        varchar name
+        varchar email UK
+        timestamp created_at
+    }
+
+    RIDE_POOLS {
+        uuid id PK
+        integer driver_id FK
+        text pickup_location
+        text drop_location
+        text pickup_lat
+        text pickup_lng
+        text drop_lat
+        text drop_lng
+        timestamp departure_date
+        varchar departure_time
+        integer total_seats
+        integer available_seats
+        integer vehicle_capacity
+        varchar vehicle_model
+        varchar vehicle_plate
+        text vehicle_image_url
+        integer price_per_seat
+        integer smoking_allowed
+        integer music_allowed
+        integer pets_allowed
+        integer female_only
+        varchar luggage_size
+        varchar status
+        integer estimated_duration
+        integer estimated_distance
+        text route_polyline
+    }
+
+    RIDE_REQUESTS {
+        serial id PK
+        integer rider_id FK
+        uuid ride_pool_id FK
+        varchar status
+        integer requested_seats
+        text message
+        text pickup_note
+        timestamp created_at
+    }
+
+    USERS ||--o{ RIDE_POOLS : "publishes as driver"
+    USERS ||--o{ RIDE_REQUESTS : "sends as rider"
+    RIDE_POOLS ||--o{ RIDE_REQUESTS : "receives"
+</div>
+
+<h3>Key Design Decisions</h3>
+<div class="decision">
+  <strong>✅ UUID for ride IDs</strong> — Prevents sequential ID enumeration attacks. Users can't guess ride URLs.<br>
+  <strong>✅ Separate total_seats vs available_seats</strong> — available_seats decrements on approval; total_seats stays fixed.<br>
+  <strong>✅ Coordinates as text</strong> — Avoids floating-point precision issues. Parsed to float in application code.<br>
+  <strong>✅ Route polyline in DB</strong> — Avoids re-calling OSRM for every page view. ~500 bytes for a 100km route.
+</div>
+
+<!-- Section 4 -->
+<div class="page-break"></div>
+<h2><span class="section-num">4</span> API Architecture</h2>
+
+<h3>Complete API Route Map (13 Endpoints)</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Auth</th></tr>
+  <tr><td><code>GET</code></td><td><code>/api/rides</code></td><td>Search rides with filters</td><td>❌</td></tr>
+  <tr><td><code>POST</code></td><td><code>/api/rides</code></td><td>Create new ride pool</td><td>✅</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/rides/[id]</code></td><td>Get single ride detail</td><td>❌</td></tr>
+  <tr><td><code>POST</code></td><td><code>/api/rides/[id]/request</code></td><td>Send join request</td><td>✅</td></tr>
+  <tr><td><code>PATCH</code></td><td><code>/api/rides/[id]/request</code></td><td>Approve/reject request</td><td>✅ Driver</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/rides/my-rides</code></td><td>Driver's rides + requests</td><td>✅</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/rides/my-requests</code></td><td>Rider's sent requests</td><td>✅</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/geocode?q=</code></td><td>Forward geocoding</td><td>❌</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/reverse-geocode</code></td><td>Reverse geocoding</td><td>❌</td></tr>
+  <tr><td><code>GET</code></td><td><code>/api/route</code></td><td>Multi-route calculation</td><td>❌</td></tr>
+  <tr><td><code>POST</code></td><td><code>/api/user/sync</code></td><td>Sync Clerk user to DB</td><td>✅</td></tr>
+  <tr><td><code>POST</code></td><td><code>/api/validate-car-image</code></td><td>AI vehicle validation</td><td>✅</td></tr>
+  <tr><td><code>POST</code></td><td><code>/api/upload-car-image</code></td><td>Upload to Appwrite</td><td>✅</td></tr>
+</table>
+
+<!-- Section 5 -->
+<div class="page-break"></div>
+<h2><span class="section-num">5</span> Flow Diagrams</h2>
+
+<h3>5.1 — Driver: Creating a Ride Pool (5-Step Wizard)</h3>
+<div class="mermaid">
+flowchart TD
+    A[Driver opens /publish] --> B{Authenticated?}
+    B -- No --> C[Redirect to /auth]
+    B -- Yes --> D["Step 1: Route Selection"]
+
+    D --> D1[Enter Pickup Location]
+    D1 --> D2["LocationAutocomplete → /api/geocode"]
+    D2 --> D3[Enter Drop Location]
+    D3 --> D4["/api/route → OSRM fetches multiple routes"]
+    D4 --> D5[Display routes on Mapbox map]
+    D5 --> D6[Driver selects preferred route]
+
+    D6 --> E["Step 2: Schedule"]
+    E --> E1[Select Date via DatePicker]
+    E1 --> E2["Select Time via TimePicker"]
+
+    E2 --> F["Step 3: Vehicle Details"]
+    F --> F1["Enter Model + License Plate"]
+    F1 --> F2[Upload Vehicle Photo]
+    F2 --> F3["Groq AI validates image"]
+    F3 -- Invalid --> F4["Error: Not a real car"]
+    F3 -- Valid --> F5["Upload to Appwrite + Get capacity"]
+
+    F5 --> G["Step 4: Preferences"]
+    G --> G1["Price, Music, Smoking, Pets, Luggage"]
+
+    G1 --> H["Step 5: Review + Confirm"]
+    H --> I["POST /api/rides"]
+    I --> J["✅ Ride Published!"]
+</div>
+
+<div class="page-break"></div>
+<h3>5.2 — Rider: Searching & Joining a Ride</h3>
+<div class="mermaid">
+flowchart TD
+    A[Rider opens Landing Page] --> B["Enter From, To, Date, Passengers"]
+    B --> B1["LocationAutocomplete → /api/geocode"]
+    B1 --> B2[Click Search]
+    B2 --> C["Navigate to /search with URL params"]
+
+    C --> D["GET /api/rides with filters"]
+    D --> D1["SQL: status = active"]
+    D1 --> D2["SQL: exact date match"]
+    D2 --> D3["SQL: available_seats >= requested"]
+    D3 --> D4["JS: Haversine pickup ≤ 30km"]
+    D4 --> D5["JS: Haversine drop ≤ 30km"]
+
+    D5 --> E[Display ride cards + filter sidebar]
+    E --> E1["Sort: Earliest / Cheapest / Shortest"]
+    E1 --> E2["Filter: Time slots + Amenities"]
+
+    E2 --> F[Click a ride card]
+    F --> G["Navigate to /rides/ride-id"]
+    G --> H[Show ride detail + map + join form]
+
+    H --> I{Authenticated?}
+    I -- No --> J["Sign in to join"]
+    I -- Yes --> K[Select seats + message]
+    K --> L["POST /api/rides/id/request"]
+    L --> M["✅ Request Sent!"]
+</div>
+
+<div class="page-break"></div>
+<h3>5.3 — Driver: Approving/Rejecting Requests</h3>
+<div class="mermaid">
+flowchart TD
+    A[Driver opens /dashboard] --> B["GET /api/rides/my-rides"]
+    B --> C[Display rides with pending badges]
+
+    C --> D[Click ride with requests]
+    D --> E["See: rider name, seats, message"]
+
+    E --> F{Decision}
+    F -- Approve --> G["PATCH /api/rides/id/request"]
+    G --> G1["Verify driver owns ride"]
+    G1 --> G2["Check seats available"]
+    G2 --> G3["status → approved"]
+    G3 --> G4["Decrement available_seats"]
+    G4 --> H["✅ Rider approved!"]
+
+    F -- Reject --> I["PATCH /api/rides/id/request"]
+    I --> I1["status → rejected"]
+    I1 --> J["❌ Request rejected"]
+</div>
+
+<!-- Section 6 -->
+<div class="page-break"></div>
+<h2><span class="section-num">6</span> Class Diagram</h2>
+<div class="mermaid">
+classDiagram
+    class User {
+        +int id
+        +string clerkId
+        +string name
+        +string email
+        +Date createdAt
+    }
+
+    class RidePool {
+        +uuid id
+        +int driverId
+        +string pickupLocation
+        +string dropLocation
+        +string pickupLat
+        +string dropLat
+        +Date departureDate
+        +string departureTime
+        +int totalSeats
+        +int availableSeats
+        +int pricePerSeat
+        +string status
+        +int estimatedDuration
+        +string routePolyline
+        +create()
+        +search()
+        +getById()
+        +isExpired()
+    }
+
+    class RideRequest {
+        +int id
+        +int riderId
+        +uuid ridePoolId
+        +string status
+        +int requestedSeats
+        +string message
+        +send()
+        +approve()
+        +reject()
+    }
+
+    class GeocodingService {
+        +search(query) LocationResult[]
+        +reverseGeocode(lat lng) Address
+    }
+
+    class RoutingService {
+        +getRoute(from to) RouteResult
+        +getMultiRoutes(from to) RouteResult[]
+    }
+
+    class ImageValidation {
+        +validateCarImage(file model) Result
+        +uploadToAppwrite(file) URL
+    }
+
+    User "1" -- "*" RidePool : publishes
+    User "1" -- "*" RideRequest : sends
+    RidePool "1" -- "*" RideRequest : receives
+    RidePool ..> GeocodingService : uses
+    RidePool ..> RoutingService : uses
+    RidePool ..> ImageValidation : uses
+</div>
+
+<!-- Section 7 -->
+<div class="page-break"></div>
+<h2><span class="section-num">7</span> Detailed API Explanations</h2>
+
+<h3>7.1 — POST /api/rides (Create Ride)</h3>
+<p><strong>What it does:</strong> Creates a new ride pool in the database.</p>
+<div class="info-box">
+  <strong>Flow:</strong> Authenticate → Lookup user → Parse body → Call OSRM for route → Insert into DB → Return ride
+</div>
+<pre><code>// OSRM calculates route info automatically
+const route = await getRoute(
+  [parseFloat(pickupLat), parseFloat(pickupLng)],
+  [parseFloat(dropLat), parseFloat(dropLng)]
+);
+// Returns: { distanceKm: 54, durationMin: 46, polyline: "encoded..." }</code></pre>
+
+<h3>7.2 — GET /api/rides (Search Rides)</h3>
+<p><strong>What it does:</strong> Searches rides with location proximity + date + seat filters.</p>
+<div class="pipeline">
+  [All Active Rides]<br>
+  <span class="arrow">&nbsp;&nbsp;↓</span> SQL: status = 'active'<br>
+  <span class="arrow">&nbsp;&nbsp;↓</span> SQL: departure_date = exact date (timezone-safe)<br>
+  <span class="arrow">&nbsp;&nbsp;↓</span> SQL: available_seats >= requested<br>
+  <span class="arrow">&nbsp;&nbsp;↓</span> JS: Haversine(rider_pickup, ride_pickup) ≤ 30 km<br>
+  <span class="arrow">&nbsp;&nbsp;↓</span> JS: Haversine(rider_drop, ride_drop) ≤ 30 km<br>
+  <span class="arrow">&nbsp;&nbsp;→</span> [Filtered Results]
+</div>
+
+<h4>Haversine Formula</h4>
+<p>Calculates great-circle distance between two GPS points on Earth's surface:</p>
+<pre><code>function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a = sin(dLat/2)² + cos(lat1) * cos(lat2) * sin(dLng/2)²;
+  return R * 2 * atan2(√a, √(1-a)); // Distance in km
+}</code></pre>
+
+<h3>7.3 — POST /api/rides/[id]/request (Join Request)</h3>
+<div class="info-box">
+  <strong>5-step validation:</strong><br>
+  1. ✅ User is authenticated (Clerk JWT)<br>
+  2. ✅ Ride exists in database<br>
+  3. ✅ User is NOT the driver (can't join own ride)<br>
+  4. ✅ Enough seats available<br>
+  5. ✅ No duplicate pending request → Insert with status "pending"
+</div>
+
+<h3>7.4 — PATCH /api/rides/[id]/request (Approve/Reject)</h3>
+<div class="two-col">
+  <div class="card">
+    <h4>On Approve ✅</h4>
+    <ol>
+      <li>Verify user IS the driver</li>
+      <li>Check seats still available</li>
+      <li>Update status → "approved"</li>
+      <li><strong>Decrement</strong> available_seats</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h4>On Reject ❌</h4>
+    <ol>
+      <li>Verify user IS the driver</li>
+      <li>Update status → "rejected"</li>
+      <li>Seats remain unchanged</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Section 8 -->
+<div class="page-break"></div>
+<h2><span class="section-num">8</span> External APIs Used</h2>
+
+<table>
+  <tr><th>Service</th><th>URL Pattern</th><th>Auth</th><th>Purpose</th></tr>
+  <tr>
+    <td><strong>OSRM</strong></td>
+    <td><code>router.project-osrm.org/route/v1/driving/{coords}</code></td>
+    <td>None (free)</td>
+    <td>Driving distance, duration, polyline geometry</td>
+  </tr>
+  <tr>
+    <td><strong>Mapbox Geocoding</strong></td>
+    <td><code>api.mapbox.com/geocoding/v5/mapbox.places/{query}.json</code></td>
+    <td>API Token</td>
+    <td>Text → GPS coordinates (best POI coverage)</td>
+  </tr>
+  <tr>
+    <td><strong>Nominatim (OSM)</strong></td>
+    <td><code>nominatim.openstreetmap.org/search?q={query}</code></td>
+    <td>None (free)</td>
+    <td>Fallback geocoder when Mapbox fails</td>
+  </tr>
+  <tr>
+    <td><strong>Groq Vision AI</strong></td>
+    <td><code>api.groq.com/openai/v1/chat/completions</code></td>
+    <td>API Key</td>
+    <td>Validate car photo + estimate seat capacity</td>
+  </tr>
+  <tr>
+    <td><strong>Appwrite Storage</strong></td>
+    <td><code>cloud.appwrite.io/v1/storage/buckets/files</code></td>
+    <td>Project Key</td>
+    <td>Vehicle image upload and serving</td>
+  </tr>
+</table>
+
+<!-- Section 9 -->
+<h2><span class="section-num">9</span> Frontend Pages & Components</h2>
+
+<h3>Page Map</h3>
+<table>
+  <tr><th>Page</th><th>Route</th><th>Purpose</th></tr>
+  <tr><td>Landing Page</td><td><code>/</code></td><td>Hero + functional search bar with autocomplete</td></tr>
+  <tr><td>Search Results</td><td><code>/search</code></td><td>BlaBlaCar-style sort/filter sidebar + ride cards</td></tr>
+  <tr><td>Ride Detail</td><td><code>/rides/[id]</code></td><td>Route timeline + map + driver info + join form</td></tr>
+  <tr><td>Publish Ride</td><td><code>/publish</code></td><td>5-step wizard: Route → Schedule → Vehicle → Prefs → Review</td></tr>
+  <tr><td>Dashboard</td><td><code>/dashboard</code></td><td>Driver's rides with request management</td></tr>
+</table>
+
+<h3>Key Reusable Components</h3>
+<table>
+  <tr><th>Component</th><th>File</th><th>Purpose</th></tr>
+  <tr><td>LocationAutocomplete</td><td><code>components/ui/location-autocomplete.tsx</code></td><td>Debounced geocoding input with rich dropdown</td></tr>
+  <tr><td>SearchPillDatePicker</td><td><code>components/ui/search-pill-date-picker.tsx</code></td><td>Custom calendar with Today/Tomorrow quick-picks</td></tr>
+  <tr><td>MapView</td><td><code>components/ui/map-view.tsx</code></td><td>Mapbox map with markers, routes, drag support</td></tr>
+  <tr><td>RideCard</td><td><code>components/ui/ride-card.tsx</code></td><td>BlaBlaCar-style timeline card with pricing</td></tr>
+  <tr><td>StepProgress</td><td><code>components/ui/step-progress.tsx</code></td><td>Animated progress bar for publish wizard</td></tr>
+</table>
+
+<!-- Section 10 -->
+<div class="page-break"></div>
+<h2><span class="section-num">10</span> Security & Validation</h2>
+<table>
+  <tr><th>Concern</th><th>How We Handle It</th></tr>
+  <tr><td><strong>Authentication</strong></td><td>Clerk middleware protects all write APIs. <code>auth()</code> extracts userId from JWT.</td></tr>
+  <tr><td><strong>Authorization</strong></td><td>Only ride's driver can approve/reject. Checked via <code>ride.driverId === user.id</code>.</td></tr>
+  <tr><td><strong>Self-join prevention</strong></td><td>API rejects requests where riderId equals driverId.</td></tr>
+  <tr><td><strong>Duplicate prevention</strong></td><td>Checks for existing "pending" request. Returns 409 Conflict.</td></tr>
+  <tr><td><strong>Seat overflow</strong></td><td>Before approving, re-checks <code>available_seats >= requested_seats</code>.</td></tr>
+  <tr><td><strong>UUID ride IDs</strong></td><td>Prevents URL enumeration. IDs like <code>ed785c99-bb92-4df2-...</code></td></tr>
+  <tr><td><strong>Image validation</strong></td><td>Groq AI verifies uploaded image is actually a car before storing.</td></tr>
+  <tr><td><strong>Address normalization</strong></td><td><code>cleanAddress()</code> replaces Arabic commas (،) with standard commas.</td></tr>
+  <tr><td><strong>Timezone safety</strong></td><td>Dates parsed with <code>T00:00:00</code> suffix to prevent UTC midnight shift in IST.</td></tr>
+</table>
+
+<!-- Section 11 -->
+<h2><span class="section-num">11</span> Key Algorithms</h2>
+
+<div class="two-col">
+  <div class="card">
+    <h4>🌍 Proximity Search (Haversine)</h4>
+    <p>Rider searches "GLA University → Agra"</p>
+    <ol>
+      <li>Geocode both locations → GPS coords</li>
+      <li>Fetch all active rides from DB</li>
+      <li>For each ride: calculate distance between search point and ride point</li>
+      <li>Include only if both pickup AND drop within <strong>30 km</strong></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h4>⏰ Ride Expiration</h4>
+    <p>Auto-disable expired rides on dashboard:</p>
+    <pre style="background:#1E293B;font-size:11px;margin:8px 0"><code>departure_time + duration < now
+→ Show "Expired" badge
+→ Reduce opacity
+→ Disable join button</code></pre>
+  </div>
+</div>
+
+<!-- Section 12 -->
+<div class="page-break"></div>
+<h2><span class="section-num">12</span> Complete Sequence Diagram</h2>
+
+<div class="mermaid">
+sequenceDiagram
+    participant D as 🚗 Driver
+    participant R as 🧑 Rider
+    participant App as ⚡ Next.js
+    participant DB as 🗄️ PostgreSQL
+    participant OSRM as 🗺️ OSRM
+    participant Map as 📍 Mapbox
+
+    Note over D,Map: Phase 1 — Pool Creation
+    D->>App: Open /publish
+    App->>App: Clerk auth check
+    D->>App: Enter locations
+    App->>Map: Geocode (text → coords)
+    Map-->>App: lat, lng
+    App->>OSRM: Get route
+    OSRM-->>App: distance, duration, polyline
+    D->>App: Fill details + Upload photo
+    App->>App: Groq AI validates car
+    D->>App: Publish ride
+    App->>DB: INSERT ride_pools
+    DB-->>App: ride UUID
+    App-->>D: ✅ Published!
+
+    Note over R,Map: Phase 2 — Search and Join
+    R->>App: Search (from, to, date)
+    App->>Map: Geocode locations
+    App->>DB: SELECT rides (date + proximity)
+    DB-->>App: Matching rides
+    App-->>R: Ride cards + filters
+    R->>App: Open ride detail
+    R->>App: Send join request
+    App->>DB: INSERT ride_requests
+    App-->>R: ✅ Request sent!
+
+    Note over D,DB: Phase 3 — Approve or Reject
+    D->>App: Open dashboard
+    App->>DB: SELECT my-rides + requests
+    App-->>D: Rides with pending badges
+    D->>App: Approve request
+    App->>DB: UPDATE status = approved
+    App->>DB: Decrement available_seats
+    App-->>D: ✅ Approved!
+</div>
+
+<!-- Section 13 -->
+<h2><span class="section-num">13</span> Benefits</h2>
+<table>
+  <tr><th>Benefit</th><th>How</th></tr>
+  <tr><td><strong>💰 Cost Reduction</strong></td><td>Shared rides split fuel costs. Price set by driver.</td></tr>
+  <tr><td><strong>🚦 Traffic Reduction</strong></td><td>Multiple people in one car instead of separate vehicles.</td></tr>
+  <tr><td><strong>🤝 Community Carpooling</strong></td><td>Preference filters (female-only, no smoking) build trust.</td></tr>
+  <tr><td><strong>🔒 Safety</strong></td><td>Clerk authentication + AI vehicle verification.</td></tr>
+  <tr><td><strong>📈 Scalability</strong></td><td>Serverless Neon DB + Next.js edge functions auto-scale.</td></tr>
+  <tr><td><strong>✨ Premium UX</strong></td><td>BlaBlaCar-inspired design with animations and interactive maps.</td></tr>
+</table>
+
+<h2><span class="section-num">14</span> Future Scope</h2>
+<ul>
+  <li>🔔 <strong>Real-time Notifications</strong> — Push when request is approved/rejected</li>
+  <li>💬 <strong>In-app Chat</strong> — Direct messaging between driver and rider</li>
+  <li>⭐ <strong>Rating System</strong> — Post-ride ratings for both parties</li>
+  <li>💳 <strong>Payment Integration</strong> — Razorpay for in-app payments</li>
+  <li>📍 <strong>Live Tracking</strong> — Real-time GPS during the ride</li>
+  <li>🤖 <strong>Smart Matching</strong> — AI-powered matching based on route overlap</li>
+</ul>
+
+<div style="text-align:center;margin-top:60px;padding:30px;background:var(--light);border-radius:16px;">
+  <div style="font-size:36px;margin-bottom:10px;">🚗</div>
+  <div style="font-size:20px;font-weight:900;color:var(--dark);">Thank You!</div>
+  <div style="font-size:14px;color:var(--gray);margin-top:6px;">Carvaan Go — Carpooling at its best</div>
+</div>
+
+</div><!-- /page -->
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#EFF6FF',
+      primaryTextColor: '#054752',
+      primaryBorderColor: '#0553BA',
+      lineColor: '#0553BA',
+      secondaryColor: '#F0FDF4',
+      tertiaryColor: '#FFF7ED',
+      fontSize: '13px',
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    sequence: { mirrorActors: false },
+  });
+</script>
+</body>
+</html>
