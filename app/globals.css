@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand: #0553BA;
+  --color-brand-hover: #033B85;
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  --color-muted: #708c91;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Outfit", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* BlaBlaCar specific shadows to lift the pill up */
+.search-pill-shadow {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+}
